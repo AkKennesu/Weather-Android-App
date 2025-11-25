@@ -8,9 +8,11 @@ A beautiful, immersive weather application built with **React Native** and **Exp
 *   **Dynamic Backgrounds**: Beautiful animated backgrounds that change based on the current weather conditions (Sunny, Rainy, Cloudy, Night, etc.).
 *   **Hourly & Daily Forecasts**: Detailed forecasts to help you plan your day and week.
 *   **Interactive UI**: Smooth animations and interactions powered by `react-native-reanimated`.
-*   **Activity Suggestions**: Smart recommendations for outdoor activities based on the weather.
+*   **Expanded Activity Suggestions**: Smart recommendations for outdoor activities including Running, Cycling, Gardening, Tennis, Badminton, Golf, Hiking, and Camping. 🎾🏸⛳🥾⛺
+*   **Customizable Settings**: Toggle specific activities and the weather map visibility to personalize your experience.
+*   **Weather Map**: Visual map integration to see weather patterns in your area.
+*   **Save Locations**: Bookmark your favorite cities for quick access. 🔖
 *   **Moon Phase**: Track the current moon phase and illumination.
-*   **City Search**: Easily search and save multiple locations.
 *   **Offline Support**: Caches weather data for offline access.
 
 ## 🛠️ Tech Stack
@@ -72,4 +74,4 @@ Contributions are welcome! Feel free to open an issue or submit a pull request.
 
 ## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source and available under the [Apache License 2.0](LICENSE).
