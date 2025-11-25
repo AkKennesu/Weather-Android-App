@@ -9,6 +9,8 @@ import HomeScreen from './src/screens/HomeScreen';
 import SearchScreen from './src/screens/SearchScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
 
+import SettingsScreen from './src/screens/SettingsScreen';
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -20,6 +22,7 @@ export default function App() {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Search" component={SearchScreen} options={{ animation: 'slide_from_bottom' }} />
           <Stack.Screen name="History" component={HistoryScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} options={{ animation: 'slide_from_right' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </WeatherProvider>

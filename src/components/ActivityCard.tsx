@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import { ActivityStatus } from '../utils/activitySuggestions';
 import { format } from 'date-fns';
-import { Smile, Frown, Bike, Sprout, Footprints } from 'lucide-react-native';
+import { Smile, Frown, Bike, Sprout, Footprints, Tent, Mountain, Flag, Trophy } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -12,6 +12,11 @@ const getActivityIcon = (activity: string) => {
         case 'Running': return <Footprints size={40} color="white" />;
         case 'Cycling': return <Bike size={40} color="white" />;
         case 'Gardening': return <Sprout size={40} color="white" />;
+        case 'Tennis':
+        case 'Badminton': return <Trophy size={40} color="white" />;
+        case 'Golf': return <Flag size={40} color="white" />;
+        case 'Hiking': return <Mountain size={40} color="white" />;
+        case 'Camping': return <Tent size={40} color="white" />;
         default: return <Smile size={40} color="white" />;
     }
 };

@@ -48,13 +48,26 @@ const isGoodForActivity = (activity: string, temp: number, rainProb: number, win
         case 'Gardening':
             // Ideal: 10-30°C, Not too windy
             return temp >= 10 && temp <= 30 && wind < 30;
+        case 'Tennis':
+        case 'Badminton':
+            // Ideal: 15-30°C, Low Wind (shuttlecocks are sensitive)
+            return temp >= 15 && temp <= 30 && wind < 15 && !isRaining;
+        case 'Golf':
+            // Ideal: 10-30°C, Not too windy, definitely no rain
+            return temp >= 10 && temp <= 30 && wind < 25 && !isRaining;
+        case 'Hiking':
+            // Ideal: 10-25°C, can handle some wind, but no rain/storm
+            return temp >= 10 && temp <= 25 && !isRaining;
+        case 'Camping':
+            // Ideal: >10°C (night might be cold), no rain
+            return temp >= 10 && !isRaining;
         default:
             return true;
     }
 };
 
 export const getActivityAnalysis = (weather: WeatherData): ActivityStatus[] => {
-    const activities = ['Running', 'Cycling', 'Gardening'];
+    const activities = ['Running', 'Cycling', 'Gardening', 'Tennis', 'Badminton', 'Golf', 'Hiking', 'Camping'];
     const currentHourIndex = new Date().getHours(); // Approximate index for current hour
 
     // Get next 3 hours (including current)
