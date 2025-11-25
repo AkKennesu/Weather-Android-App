@@ -10,6 +10,7 @@ export interface WeatherData {
         windspeed: number;
         winddirection: number;
         weathercode: number;
+        is_day: number;
         time: string;
     };
     daily: {
@@ -17,11 +18,19 @@ export interface WeatherData {
         temperature_2m_max: number[];
         temperature_2m_min: number[];
         weathercode: number[];
+        sunrise: string[];
+        sunset: string[];
+        uv_index_max: number[];
+        precipitation_sum: number[];
+        precipitation_probability_max: number[];
     };
     hourly: {
         time: string[];
         temperature_2m: number[];
         weathercode: number[];
+        relative_humidity_2m: number[];
+        wind_speed_10m: number[];
+        precipitation_probability: number[];
     };
 }
 
@@ -41,8 +50,8 @@ export const fetchWeather = async (lat: number, lon: number): Promise<WeatherDat
                 latitude: lat,
                 longitude: lon,
                 current_weather: true,
-                daily: 'temperature_2m_max,temperature_2m_min,weathercode',
-                hourly: 'temperature_2m,weathercode',
+                daily: 'temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,uv_index_max,precipitation_sum,precipitation_probability_max',
+                hourly: 'temperature_2m,weathercode,relative_humidity_2m,wind_speed_10m,precipitation_probability',
                 timezone: 'auto',
             },
         });
