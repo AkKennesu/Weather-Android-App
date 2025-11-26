@@ -66,7 +66,13 @@ Follow these steps to run the project locally.
 
 ## 📱 Screenshots
 
-*(Add screenshots of your app here)*
+| Home Screen | Forecast & Air Quality | Activities & Moon |
+|:---:|:---:|:---:|
+| <img src="assets/screenshots/home_screen.png" width="200" /> | <img src="assets/screenshots/forecast_details.png" width="200" /> | <img src="assets/screenshots/activities_moon.png" width="200" /> |
+
+| Weather Map | History | |
+|:---:|:---:|:---:|
+| <img src="assets/screenshots/weather_map.jpg" width="200" /> | <img src="assets/screenshots/history.png" width="200" /> | |
 
 ## 🤝 Contributing
 
