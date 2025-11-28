@@ -1,24 +1,26 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl, TextInput, Modal, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Location from 'expo-location';
 import { format } from 'date-fns';
-import { MapPin, Calendar, Wind, Search, Clock, Droplets, CloudRain, Moon, Sunrise, Sunset, Sun, Settings, Eye, Gauge, Thermometer, Map as MapIcon, Bookmark } from 'lucide-react-native';
+import { MapPin, Wind, Search, Moon, Sunrise, Sunset, Settings, Eye, Gauge, Thermometer, Map as MapIcon, Sun, CloudRain, Clock } from 'lucide-react-native';
 import SunCalc from 'suncalc';
 
 import { useWeather } from '../context/WeatherContext';
-import { fetchWeather, fetchAirQuality, searchCity, WeatherData, LocationData } from '../api/weather';
+import { fetchWeather, fetchAirQuality, searchCity, LocationData } from '../api/weather';
 import { getWeatherInfo } from '../utils/weatherCodes';
 import { getMoonPhase } from '../utils/moonPhase';
 import { getWeatherTip, getActivityAnalysis } from '../utils/activitySuggestions';
 
-import { WeatherIcon } from '../components/WeatherIcon';
-import { WeatherBackground } from '../components/WeatherBackground';
 import { WeatherDetails } from '../components/WeatherDetails';
 import { ActivityCard } from '../components/ActivityCard';
 import { WindyMap } from '../components/WindyMap';
+import { WeatherHeader } from '../components/WeatherHeader';
+import { HourlyForecast } from '../components/HourlyForecast';
+import { DailyForecast } from '../components/DailyForecast';
+import { WeatherIcon } from '../components/WeatherIcon';
 
 export default function HomeScreen() {
     const navigation = useNavigation<any>();
@@ -37,8 +39,8 @@ export default function HomeScreen() {
     const [mapModalVisible, setMapModalVisible] = useState(false);
 
     // Rate Limiting Refs
-    const lastFetchTime = React.useRef<number>(0);
-    const lastFetchCoords = React.useRef<{ lat: number, lon: number } | null>(null);
+    const lastFetchTime = useRef<number>(0);
+    const lastFetchCoords = useRef<{ lat: number, lon: number } | null>(null);
 
     // Theme Helpers
     const isDark = theme === 'dark';
@@ -115,7 +117,7 @@ export default function HomeScreen() {
                 setSelectedDate(weatherData.daily.time[0]);
             }
         } catch (error) {
-            console.error(error);
+            // Error handling silently in production or log to service
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -139,7 +141,7 @@ export default function HomeScreen() {
                 const data = await searchCity(text);
                 setSearchResults(data);
             } catch (error) {
-                console.error(error);
+                // Error handling
             }
         } else {
             setSearchResults([]);
@@ -291,64 +293,18 @@ export default function HomeScreen() {
 
                     {weather && displayWeather && weatherInfo ? (
                         <>
-                            {/* Main Weather Info (Centered with Animated Background) */}
-                            <View className={`mx-4 mb-6 mt-2 rounded-[40px] overflow-hidden relative min-h-[500px] justify-center border ${borderColor}`}>
-                                {/* Animated Background for this section only */}
-                                <WeatherBackground
-                                    code={displayWeather.weathercode}
-                                    isDay={displayWeather.is_day === 1}
-                                    style={{ width: '100%', height: '100%', position: 'absolute' }}
-                                />
-
-                                <View className="items-center py-10 z-10">
-                                    <Text className="text-white text-3xl font-bold tracking-wider text-center shadow-lg">
-                                        {location?.name || 'Current Location'}
-                                    </Text>
-                                    <Text className="text-gray-200 text-sm font-medium mt-1 shadow-md">
-                                        {selectedHour
-                                            ? format(new Date(selectedHour.time), 'EEEE, h:mm a')
-                                            : format(new Date(), 'EEEE, d MMMM')
-                                        }
-                                    </Text>
-
-                                    <View className="my-8 shadow-2xl">
-                                        <WeatherIcon code={displayWeather.weathercode} isDay={displayWeather.is_day === 1} width={200} height={200} />
-                                    </View>
-
-                                    <Text className="text-white text-8xl font-bold tracking-tighter ml-4 shadow-lg">
-                                        {formatTemp(displayWeather.temperature)}°
-                                    </Text>
-
-                                    <Text className="text-white text-xl font-medium mt-2 tracking-widest uppercase shadow-md">
-                                        {weatherInfo.label}
-                                    </Text>
-
-                                    <View className="flex-row space-x-4 mt-3">
-                                        <Text className="text-gray-200 font-medium shadow-sm">H: {formatTemp(weather.daily.temperature_2m_max[0])}°</Text>
-                                        <Text className="text-gray-200 font-medium shadow-sm">L: {formatTemp(weather.daily.temperature_2m_min[0])}°</Text>
-                                    </View>
-                                </View>
-
-                                {/* Save Location Button */}
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        if (!location) return;
-                                        const isSaved = savedLocations.some(l => l.id === location.id);
-                                        if (isSaved) {
-                                            removeSavedLocation(location.id);
-                                        } else {
-                                            addSavedLocation(location);
-                                        }
-                                    }}
-                                    className="absolute bottom-6 right-6 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 shadow-lg z-50"
-                                >
-                                    <Bookmark
-                                        size={24}
-                                        color="white"
-                                        fill={savedLocations.some(l => l.id === location?.id) ? "white" : "transparent"}
-                                    />
-                                </TouchableOpacity>
-                            </View>
+                            <WeatherHeader
+                                location={location}
+                                selectedHour={selectedHour}
+                                displayWeather={displayWeather}
+                                weatherInfo={weatherInfo}
+                                weather={weather}
+                                savedLocations={savedLocations}
+                                addSavedLocation={addSavedLocation}
+                                removeSavedLocation={removeSavedLocation}
+                                formatTemp={formatTemp}
+                                borderColor={borderColor}
+                            />
 
                             {/* Weather Details Grid */}
                             {layoutPreferences.showWeatherDetails && (
@@ -426,62 +382,23 @@ export default function HomeScreen() {
                                 </>
                             )}
 
-                            {/* Hourly Forecast (Filtered by Selected Date) */}
+                            {/* Hourly Forecast */}
                             {layoutPreferences.showHourlyForecast && (
-                                <View className="mb-6">
-                                    <View className="flex-row items-center px-6 mb-3 justify-between">
-                                        <View className="flex-row items-center">
-                                            <Clock size={18} color={searchPlaceholder} />
-                                            <Text className={`${textColor} font-bold ml-2`}>
-                                                {selectedDate && format(new Date(selectedDate), 'EEEE')} Forecast
-                                            </Text>
-                                        </View>
-
-                                        {/* Return to Present Button */}
-                                        {(selectedHour || (selectedDate && !new Date(selectedDate).toDateString().includes(new Date().toDateString()))) && (
-                                            <TouchableOpacity
-                                                onPress={() => {
-                                                    setSelectedHour(null);
-                                                    if (weather && weather.daily.time.length > 0) {
-                                                        setSelectedDate(weather.daily.time[0]);
-                                                    }
-                                                }}
-                                                className="bg-blue-500/20 px-3 py-1 rounded-full border border-blue-500/50"
-                                            >
-                                                <Text className="text-blue-400 text-xs font-bold">Return to Now</Text>
-                                            </TouchableOpacity>
-                                        )}
-                                    </View>
-                                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20 }}>
-                                        {hourlyIndices.map((actualIndex) => {
-                                            const time = weather.hourly.time[actualIndex];
-                                            const date = new Date(time);
-                                            const hour = format(date, 'h a');
-                                            const code = weather.hourly.weathercode[actualIndex];
-
-                                            // Highlight selected hour
-                                            const isSelected = selectedHour && selectedHour.time === time;
-
-                                            // Simple day/night check based on hour (6am-6pm)
-                                            const hourNum = date.getHours();
-                                            const isDay = hourNum >= 6 && hourNum < 18;
-
-                                            return (
-                                                <TouchableOpacity
-                                                    key={time}
-                                                    onPress={() => handleHourClick(0, actualIndex)} // Pass actual index
-                                                    className={`items-center justify-center w-16 py-4 mr-3 rounded-3xl ${isSelected ? 'bg-[#3b82f6] border-2 border-white' : `${cardBg} border ${borderColor}`}`}
-                                                >
-                                                    <Text className={`text-xs mb-2 ${isSelected ? 'text-white font-bold' : subTextColor}`}>{hour}</Text>
-                                                    <WeatherIcon code={code} isDay={isDay} width={32} height={32} />
-                                                    <Text className={`text-sm font-bold mt-2 ${isSelected ? 'text-white' : textColor}`}>
-                                                        {formatTemp(weather.hourly.temperature_2m[actualIndex])}°
-                                                    </Text>
-                                                </TouchableOpacity>
-                                            );
-                                        })}
-                                    </ScrollView>
-                                </View>
+                                <HourlyForecast
+                                    weather={weather}
+                                    selectedDate={selectedDate}
+                                    selectedHour={selectedHour}
+                                    hourlyIndices={hourlyIndices}
+                                    handleHourClick={handleHourClick}
+                                    formatTemp={formatTemp}
+                                    setSelectedHour={setSelectedHour}
+                                    setSelectedDate={setSelectedDate}
+                                    textColor={textColor}
+                                    subTextColor={subTextColor}
+                                    cardBg={cardBg}
+                                    borderColor={borderColor}
+                                    searchPlaceholder={searchPlaceholder}
+                                />
                             )}
 
                             {/* Weather Tip */}
@@ -573,48 +490,20 @@ export default function HomeScreen() {
                                 </View>
                             )}
 
-                            {/* Daily Forecast (Clickable) */}
+                            {/* Daily Forecast */}
                             {layoutPreferences.showDailyForecast && (
-                                <View className="px-4 mb-6">
-                                    <View className="flex-row items-center mb-4 px-2">
-                                        <Calendar size={20} color={searchPlaceholder} />
-                                        <Text className={`${textColor} font-bold ml-2 text-lg`}>Next 7 Days</Text>
-                                    </View>
-                                    <View className={`${cardBg} rounded-3xl p-4 border ${borderColor}`}>
-                                        {weather.daily.time.map((date, index) => {
-                                            const code = weather.daily.weathercode[index];
-                                            const info = getWeatherInfo(code);
-                                            const isToday = index === 0;
-                                            const isSelected = selectedDate === date;
-
-                                            return (
-                                                <TouchableOpacity
-                                                    key={date}
-                                                    onPress={() => handleDayClick(index)}
-                                                    className={`flex-row justify-between items-center py-5 border-b ${borderColor} last:border-0 ${isSelected ? (isDark ? 'bg-white/10' : 'bg-blue-50') + ' -mx-4 px-4' : ''}`}
-                                                >
-                                                    <Text className={`font-medium w-24 text-base ${isSelected ? 'text-blue-400 font-bold' : textColor}`}>
-                                                        {isToday ? 'Today' : format(new Date(date), 'EEEE')}
-                                                    </Text>
-                                                    <View className="flex-row items-center flex-1 justify-center">
-                                                        <View className="flex-col items-center">
-                                                            <WeatherIcon code={code} isDay={true} width={40} height={40} />
-                                                            <Text className={`text-[10px] ${subTextColor} mt-1 font-medium`}>{info.label}</Text>
-                                                        </View>
-                                                    </View>
-                                                    <View className="flex-row w-24 justify-end items-center space-x-4">
-                                                        <Text className={`${textColor} font-bold text-lg`}>
-                                                            {formatTemp(weather.daily.temperature_2m_max[index])}°
-                                                        </Text>
-                                                        <Text className={`${subTextColor} text-lg`}>
-                                                            {formatTemp(weather.daily.temperature_2m_min[index])}°
-                                                        </Text>
-                                                    </View>
-                                                </TouchableOpacity>
-                                            );
-                                        })}
-                                    </View>
-                                </View>
+                                <DailyForecast
+                                    weather={weather}
+                                    selectedDate={selectedDate}
+                                    handleDayClick={handleDayClick}
+                                    formatTemp={formatTemp}
+                                    textColor={textColor}
+                                    subTextColor={subTextColor}
+                                    cardBg={cardBg}
+                                    borderColor={borderColor}
+                                    searchPlaceholder={searchPlaceholder}
+                                    isDark={isDark}
+                                />
                             )}
 
                             {/* Windy Map Forecast */}
@@ -649,7 +538,7 @@ export default function HomeScreen() {
                         className="bg-[#3b82f6] p-4 rounded-full shadow-lg shadow-blue-500/50"
                         onPress={() => navigation.navigate('History')}
                     >
-                        <Calendar color="white" size={24} />
+                        <MapIcon color="white" size={24} />
                     </TouchableOpacity>
                 </View>
 
