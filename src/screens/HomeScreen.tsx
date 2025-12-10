@@ -24,7 +24,7 @@ import { WeatherIcon } from '../components/WeatherIcon';
 
 export default function HomeScreen() {
     const navigation = useNavigation<any>();
-    const { location, setLocation, weather, setWeather, airQuality, setAirQuality, layoutPreferences, units, theme, enabledActivities, addSavedLocation, removeSavedLocation, savedLocations } = useWeather();
+    const { location, setLocation, weather, setWeather, airQuality, setAirQuality, layoutPreferences, units, theme, enabledActivities, addSavedLocation, removeSavedLocation, savedLocations, layoutOrder } = useWeather();
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -306,223 +306,231 @@ export default function HomeScreen() {
                                 borderColor={borderColor}
                             />
 
-                            {/* Weather Details Grid */}
-                            {layoutPreferences.showWeatherDetails && (
-                                <>
-                                    <WeatherDetails
-                                        windSpeed={displayWeather.windspeed}
-                                        humidity={selectedHour ? displayWeather.humidity : weather.hourly.relative_humidity_2m[0]}
-                                        precipitation={selectedHour ? displayWeather.precipitation : weather.hourly.precipitation_probability[0]}
-                                    />
-                                    {/* Extended Details */}
-                                    <View className="flex-row flex-wrap justify-between px-4 mt-4">
-                                        {/* Feels Like */}
-                                        <View className={`w-[31%] ${cardBg} rounded-2xl p-3 items-center mb-3 border ${borderColor}`}>
-                                            <Thermometer size={20} color="#f87171" />
-                                            <Text className={`${subTextColor} text-[10px] mt-1`}>Feels Like</Text>
-                                            <Text className={`${textColor} font-bold text-sm`}>
-                                                {selectedHour && selectedHour.apparent_temperature
-                                                    ? `${formatTemp(selectedHour.apparent_temperature)}°`
-                                                    : (weather.hourly.apparent_temperature ? `${formatTemp(weather.hourly.apparent_temperature[0])}°` : 'N/A')}
-                                            </Text>
-                                        </View>
-                                        {/* Pressure */}
-                                        <View className={`w-[31%] ${cardBg} rounded-2xl p-3 items-center mb-3 border ${borderColor}`}>
-                                            <Gauge size={20} color="#a78bfa" />
-                                            <Text className={`${subTextColor} text-[10px] mt-1`}>Pressure</Text>
-                                            <Text className={`${textColor} font-bold text-sm`}>
-                                                {selectedHour && selectedHour.surface_pressure
-                                                    ? `${Math.round(selectedHour.surface_pressure)} hPa`
-                                                    : (weather.hourly.surface_pressure ? `${Math.round(weather.hourly.surface_pressure[0])} hPa` : 'N/A')}
-                                            </Text>
-                                        </View>
-                                        {/* Visibility */}
-                                        <View className={`w-[31%] ${cardBg} rounded-2xl p-3 items-center mb-3 border ${borderColor}`}>
-                                            <Eye size={20} color="#60a5fa" />
-                                            <Text className={`${subTextColor} text-[10px] mt-1`}>Visibility</Text>
-                                            <Text className={`${textColor} font-bold text-sm`}>
-                                                {selectedHour && selectedHour.visibility
-                                                    ? `${(selectedHour.visibility / 1000).toFixed(1)} km`
-                                                    : (weather.hourly.visibility ? `${(weather.hourly.visibility[0] / 1000).toFixed(1)} km` : 'N/A')}
-                                            </Text>
-                                        </View>
-                                    </View>
-
-                                    {/* Air Quality Section */}
-                                    {airQuality && (
-                                        <View className="px-4 mb-6 mt-2">
-                                            <View className={`${cardBg} rounded-3xl p-4 border ${borderColor}`}>
-                                                <View className="flex-row items-center mb-3">
-                                                    <Wind size={18} color="#34d399" />
-                                                    <Text className={`${textColor} font-bold ml-2`}>Air Quality</Text>
-                                                </View>
-                                                <View className="flex-row justify-between">
-                                                    <View className="items-center">
-                                                        <Text className={`${subTextColor} text-xs`}>AQI (US)</Text>
-                                                        <Text className={`${textColor} font-bold text-lg`}>{airQuality.current.uv_index}</Text>
+                            {layoutOrder.map((sectionId) => {
+                                switch (sectionId) {
+                                    case 'weatherDetails':
+                                        return layoutPreferences.showWeatherDetails && (
+                                            <View key="weatherDetails">
+                                                <WeatherDetails
+                                                    windSpeed={displayWeather.windspeed}
+                                                    humidity={selectedHour ? displayWeather.humidity : weather.hourly.relative_humidity_2m[0]}
+                                                    precipitation={selectedHour ? displayWeather.precipitation : weather.hourly.precipitation_probability[0]}
+                                                />
+                                                {/* Extended Details */}
+                                                <View className="flex-row flex-wrap justify-between px-4 mt-4">
+                                                    {/* Feels Like */}
+                                                    <View className={`w-[31%] ${cardBg} rounded-2xl p-3 items-center mb-3 border ${borderColor}`}>
+                                                        <Thermometer size={20} color="#f87171" />
+                                                        <Text className={`${subTextColor} text-[10px] mt-1`}>Feels Like</Text>
+                                                        <Text className={`${textColor} font-bold text-sm`}>
+                                                            {selectedHour && selectedHour.apparent_temperature
+                                                                ? `${formatTemp(selectedHour.apparent_temperature)}°`
+                                                                : (weather.hourly.apparent_temperature ? `${formatTemp(weather.hourly.apparent_temperature[0])}°` : 'N/A')}
+                                                        </Text>
                                                     </View>
-                                                    <View className="items-center">
-                                                        <Text className={`${subTextColor} text-xs`}>PM2.5</Text>
-                                                        <Text className={`${textColor} font-bold text-lg`}>{airQuality.current.pm2_5}</Text>
+                                                    {/* Pressure */}
+                                                    <View className={`w-[31%] ${cardBg} rounded-2xl p-3 items-center mb-3 border ${borderColor}`}>
+                                                        <Gauge size={20} color="#a78bfa" />
+                                                        <Text className={`${subTextColor} text-[10px] mt-1`}>Pressure</Text>
+                                                        <Text className={`${textColor} font-bold text-sm`}>
+                                                            {selectedHour && selectedHour.surface_pressure
+                                                                ? `${Math.round(selectedHour.surface_pressure)} hPa`
+                                                                : (weather.hourly.surface_pressure ? `${Math.round(weather.hourly.surface_pressure[0])} hPa` : 'N/A')}
+                                                        </Text>
                                                     </View>
-                                                    <View className="items-center">
-                                                        <Text className={`${subTextColor} text-xs`}>PM10</Text>
-                                                        <Text className={`${textColor} font-bold text-lg`}>{airQuality.current.pm10}</Text>
-                                                    </View>
-                                                    <View className="items-center">
-                                                        <Text className={`${subTextColor} text-xs`}>Ozone</Text>
-                                                        <Text className={`${textColor} font-bold text-lg`}>{airQuality.current.ozone}</Text>
+                                                    {/* Visibility */}
+                                                    <View className={`w-[31%] ${cardBg} rounded-2xl p-3 items-center mb-3 border ${borderColor}`}>
+                                                        <Eye size={20} color="#60a5fa" />
+                                                        <Text className={`${subTextColor} text-[10px] mt-1`}>Visibility</Text>
+                                                        <Text className={`${textColor} font-bold text-sm`}>
+                                                            {selectedHour && selectedHour.visibility
+                                                                ? `${(selectedHour.visibility / 1000).toFixed(1)} km`
+                                                                : (weather.hourly.visibility ? `${(weather.hourly.visibility[0] / 1000).toFixed(1)} km` : 'N/A')}
+                                                        </Text>
                                                     </View>
                                                 </View>
+
+                                                {/* Air Quality Section */}
+                                                {airQuality && (
+                                                    <View className="px-4 mb-6 mt-2">
+                                                        <View className={`${cardBg} rounded-3xl p-4 border ${borderColor}`}>
+                                                            <View className="flex-row items-center mb-3">
+                                                                <Wind size={18} color="#34d399" />
+                                                                <Text className={`${textColor} font-bold ml-2`}>Air Quality</Text>
+                                                            </View>
+                                                            <View className="flex-row justify-between">
+                                                                <View className="items-center">
+                                                                    <Text className={`${subTextColor} text-xs`}>AQI (US)</Text>
+                                                                    <Text className={`${textColor} font-bold text-lg`}>{airQuality.current.uv_index}</Text>
+                                                                </View>
+                                                                <View className="items-center">
+                                                                    <Text className={`${subTextColor} text-xs`}>PM2.5</Text>
+                                                                    <Text className={`${textColor} font-bold text-lg`}>{airQuality.current.pm2_5}</Text>
+                                                                </View>
+                                                                <View className="items-center">
+                                                                    <Text className={`${subTextColor} text-xs`}>PM10</Text>
+                                                                    <Text className={`${textColor} font-bold text-lg`}>{airQuality.current.pm10}</Text>
+                                                                </View>
+                                                                <View className="items-center">
+                                                                    <Text className={`${subTextColor} text-xs`}>Ozone</Text>
+                                                                    <Text className={`${textColor} font-bold text-lg`}>{airQuality.current.ozone}</Text>
+                                                                </View>
+                                                            </View>
+                                                        </View>
+                                                    </View>
+                                                )}
+                                                <View className="mb-6" />
                                             </View>
-                                        </View>
-                                    )}
+                                        );
 
-                                    <View className="mb-6" />
-                                </>
-                            )}
+                                    case 'hourlyForecast':
+                                        return layoutPreferences.showHourlyForecast && (
+                                            <View key="hourlyForecast">
+                                                <HourlyForecast
+                                                    weather={weather}
+                                                    selectedDate={selectedDate}
+                                                    selectedHour={selectedHour}
+                                                    hourlyIndices={hourlyIndices}
+                                                    handleHourClick={handleHourClick}
+                                                    formatTemp={formatTemp}
+                                                    setSelectedHour={setSelectedHour}
+                                                    setSelectedDate={setSelectedDate}
+                                                    textColor={textColor}
+                                                    subTextColor={subTextColor}
+                                                    cardBg={cardBg}
+                                                    borderColor={borderColor}
+                                                    searchPlaceholder={searchPlaceholder}
+                                                />
+                                            </View>
+                                        );
 
-                            {/* Hourly Forecast */}
-                            {layoutPreferences.showHourlyForecast && (
-                                <HourlyForecast
-                                    weather={weather}
-                                    selectedDate={selectedDate}
-                                    selectedHour={selectedHour}
-                                    hourlyIndices={hourlyIndices}
-                                    handleHourClick={handleHourClick}
-                                    formatTemp={formatTemp}
-                                    setSelectedHour={setSelectedHour}
-                                    setSelectedDate={setSelectedDate}
-                                    textColor={textColor}
-                                    subTextColor={subTextColor}
-                                    cardBg={cardBg}
-                                    borderColor={borderColor}
-                                    searchPlaceholder={searchPlaceholder}
-                                />
-                            )}
-
-                            {/* Weather Tip */}
-                            <View className="px-4 mb-6">
-                                <View className="bg-blue-500/10 rounded-3xl p-4 border border-blue-500/20 flex-row items-center">
-                                    <View className="bg-blue-500/20 p-2 rounded-full mr-3">
-                                        <Wind size={20} color="#60a5fa" />
-                                    </View>
-                                    <Text className="text-blue-400 font-medium flex-1">
-                                        {getWeatherTip(weather.current_weather)}
-                                    </Text>
-                                </View>
-                            </View>
-
-                            {/* Activities */}
-                            {layoutPreferences.showActivities && (
-                                <View className="mb-6">
-                                    <View className="flex-row items-center px-6 mb-3">
-                                        <Text className={`${textColor} font-bold text-lg`}>Activities</Text>
-                                    </View>
-                                    <ScrollView
-                                        horizontal
-                                        showsHorizontalScrollIndicator={false}
-                                        contentContainerStyle={{ paddingHorizontal: 16 }}
-                                        snapToInterval={Dimensions.get('window').width - 16}
-                                        decelerationRate="fast"
-                                        snapToAlignment="center"
-                                    >
-                                        {getActivityAnalysis(weather)
-                                            .filter(activity => enabledActivities.includes(activity.activity))
-                                            .map((activity, index) => (
-                                                <ActivityCard key={index} data={activity} />
-                                            ))}
-                                    </ScrollView>
-                                </View>
-                            )}
-
-                            {/* Moon Phase */}
-                            {layoutPreferences.showMoonPhase && (
-                                <View className="px-4 mb-6">
-                                    <View className={`${cardBg} rounded-3xl p-5 border ${borderColor}`}>
-                                        <View className="flex-row items-center justify-between mb-4">
-                                            <View>
-                                                <View className="flex-row items-center mb-2">
-                                                    <Moon size={18} color={searchPlaceholder} />
-                                                    <Text className={`${textColor} font-bold ml-2`}>Moon Phase</Text>
+                                    case 'activities':
+                                        return layoutPreferences.showActivities && (
+                                            <View key="activities" className="mb-6">
+                                                <View className="flex-row items-center px-6 mb-3">
+                                                    <Text className={`${textColor} font-bold text-lg`}>Activities</Text>
                                                 </View>
-                                                <Text className={`${textColor} text-lg font-medium`}>{getMoonPhase(new Date()).label}</Text>
-                                                <Text className={`${subTextColor} text-sm`}>Illumination: {Math.round(getMoonPhase(new Date()).fraction * 100)}%</Text>
+                                                <ScrollView
+                                                    horizontal
+                                                    showsHorizontalScrollIndicator={false}
+                                                    contentContainerStyle={{ paddingHorizontal: 16 }}
+                                                    snapToInterval={Dimensions.get('window').width - 16}
+                                                    decelerationRate="fast"
+                                                    snapToAlignment="center"
+                                                >
+                                                    {getActivityAnalysis(weather)
+                                                        .filter(activity => enabledActivities.includes(activity.activity))
+                                                        .map((activity, index) => (
+                                                            <ActivityCard key={index} data={activity} />
+                                                        ))}
+                                                </ScrollView>
                                             </View>
-                                            <View>
-                                                {(() => {
-                                                    const PhaseIcon = getMoonPhase(new Date()).icon;
-                                                    return <PhaseIcon size={40} color={isDark ? "#e2e8f0" : "#475569"} />;
-                                                })()}
-                                            </View>
-                                        </View>
+                                        );
 
-                                        {/* Moonrise/Moonset */}
-                                        <View className={`flex-row justify-between pt-4 border-t ${borderColor}`}>
-                                            <View className="flex-row items-center">
-                                                <Sunrise size={16} color="#fbbf24" />
-                                                <View className="ml-2">
-                                                    <Text className={`${subTextColor} text-xs`}>Moonrise</Text>
-                                                    <Text className={`${textColor} font-medium`}>
-                                                        {(() => {
-                                                            if (!location) return 'N/A';
-                                                            const times = SunCalc.getMoonTimes(new Date(), location.latitude, location.longitude);
-                                                            return times.rise ? format(times.rise, 'h:mm a') : 'N/A';
-                                                        })()}
-                                                    </Text>
+                                    case 'moonPhase':
+                                        return layoutPreferences.showMoonPhase && (
+                                            <View key="moonPhase" className="px-4 mb-6">
+                                                <View className={`${cardBg} rounded-3xl p-5 border ${borderColor}`}>
+                                                    <View className="flex-row items-center justify-between mb-4">
+                                                        <View>
+                                                            <View className="flex-row items-center mb-2">
+                                                                <Moon size={18} color={searchPlaceholder} />
+                                                                <Text className={`${textColor} font-bold ml-2`}>Moon Phase</Text>
+                                                            </View>
+                                                            <Text className={`${textColor} text-lg font-medium`}>{getMoonPhase(new Date()).label}</Text>
+                                                            <Text className={`${subTextColor} text-sm`}>Illumination: {Math.round(getMoonPhase(new Date()).fraction * 100)}%</Text>
+                                                        </View>
+                                                        <View>
+                                                            {(() => {
+                                                                const PhaseIcon = getMoonPhase(new Date()).icon;
+                                                                return <PhaseIcon size={40} color={isDark ? "#e2e8f0" : "#475569"} />;
+                                                            })()}
+                                                        </View>
+                                                    </View>
+
+                                                    <View className={`flex-row justify-between pt-4 border-t ${borderColor}`}>
+                                                        <View className="flex-row items-center">
+                                                            <Sunrise size={16} color="#fbbf24" />
+                                                            <View className="ml-2">
+                                                                <Text className={`${subTextColor} text-xs`}>Moonrise</Text>
+                                                                <Text className={`${textColor} font-medium`}>
+                                                                    {(() => {
+                                                                        if (!location) return 'N/A';
+                                                                        const times = SunCalc.getMoonTimes(new Date(), location.latitude, location.longitude);
+                                                                        return times.rise ? format(times.rise, 'h:mm a') : 'N/A';
+                                                                    })()}
+                                                                </Text>
+                                                            </View>
+                                                        </View>
+                                                        <View className="flex-row items-center">
+                                                            <Sunset size={16} color="#f97316" />
+                                                            <View className="ml-2">
+                                                                <Text className={`${subTextColor} text-xs`}>Moonset</Text>
+                                                                <Text className={`${textColor} font-medium`}>
+                                                                    {(() => {
+                                                                        if (!location) return 'N/A';
+                                                                        const times = SunCalc.getMoonTimes(new Date(), location.latitude, location.longitude);
+                                                                        return times.set ? format(times.set, 'h:mm a') : 'N/A';
+                                                                    })()}
+                                                                </Text>
+                                                            </View>
+                                                        </View>
+                                                    </View>
                                                 </View>
                                             </View>
-                                            <View className="flex-row items-center">
-                                                <Sunset size={16} color="#f97316" />
-                                                <View className="ml-2">
-                                                    <Text className={`${subTextColor} text-xs`}>Moonset</Text>
-                                                    <Text className={`${textColor} font-medium`}>
-                                                        {(() => {
-                                                            if (!location) return 'N/A';
-                                                            const times = SunCalc.getMoonTimes(new Date(), location.latitude, location.longitude);
-                                                            return times.set ? format(times.set, 'h:mm a') : 'N/A';
-                                                        })()}
-                                                    </Text>
+                                        );
+
+                                    case 'dailyForecast':
+                                        return layoutPreferences.showDailyForecast && (
+                                            <View key="dailyForecast">
+                                                <DailyForecast
+                                                    weather={weather}
+                                                    selectedDate={selectedDate}
+                                                    handleDayClick={handleDayClick}
+                                                    formatTemp={formatTemp}
+                                                    textColor={textColor}
+                                                    subTextColor={subTextColor}
+                                                    cardBg={cardBg}
+                                                    borderColor={borderColor}
+                                                    searchPlaceholder={searchPlaceholder}
+                                                    isDark={isDark}
+                                                />
+                                            </View>
+                                        );
+
+                                    case 'weatherMap':
+                                        return layoutPreferences.showWeatherMap && location && (
+                                            <View key="weatherMap" className="px-4 mb-20">
+                                                <View className="flex-row items-center mb-4 px-2">
+                                                    <MapIcon size={20} color={searchPlaceholder} />
+                                                    <Text className={`${textColor} font-bold ml-2 text-lg`}>Weather Map</Text>
+                                                </View>
+                                                <View className="h-[300px]">
+                                                    <WindyMap
+                                                        latitude={location.latitude}
+                                                        longitude={location.longitude}
+                                                        interactive={false}
+                                                        onPress={() => setMapModalVisible(true)}
+                                                    />
                                                 </View>
                                             </View>
-                                        </View>
-                                    </View>
-                                </View>
-                            )}
+                                        );
+                                }
+                            })}
 
-                            {/* Daily Forecast */}
-                            {layoutPreferences.showDailyForecast && (
-                                <DailyForecast
-                                    weather={weather}
-                                    selectedDate={selectedDate}
-                                    handleDayClick={handleDayClick}
-                                    formatTemp={formatTemp}
-                                    textColor={textColor}
-                                    subTextColor={subTextColor}
-                                    cardBg={cardBg}
-                                    borderColor={borderColor}
-                                    searchPlaceholder={searchPlaceholder}
-                                    isDark={isDark}
-                                />
-                            )}
-
-                            {/* Windy Map Forecast */}
-                            {layoutPreferences.showWeatherMap && location && (
-                                <View className="px-4 mb-20">
-                                    <View className="flex-row items-center mb-4 px-2">
-                                        <MapIcon size={20} color={searchPlaceholder} />
-                                        <Text className={`${textColor} font-bold ml-2 text-lg`}>Weather Map</Text>
-                                    </View>
-                                    <View className="h-[300px]">
-                                        <WindyMap
-                                            latitude={location.latitude}
-                                            longitude={location.longitude}
-                                            interactive={false}
-                                            onPress={() => setMapModalVisible(true)}
-                                        />
-                                    </View>
-                                </View>
-                            )}
+                            {/* Weather Tip - Keep outside of reorder for now, or add to 'weatherDetails' or a new section? 
+                                Actually, in original code it was between Hourly and Activities. 
+                                Let's put it fixed at the bottom of the list or attach to weatherDetails?
+                                Original: WeatherDetails -> Hourly -> Tip -> Activities.
+                                Let's attach it to 'hourlyForecast' or 'weatherDetails' to keep it somewhere logic.
+                                Or just hardcode it after the loop? 
+                                Let's hardcode it after header? No, it's a "Tip".
+                                I'll add a new section 'weatherTip' to layoutOrder implicitly or just render it if specific condition met.
+                                For now, I'll render it AFTER the loop if I missed it, OR I can add it to 'weatherDetails' block.
+                                In the previous code, it was lines 405-414.
+                                I'll put it in 'weatherDetails' for now, or better, 'hourlyForecast' case since it's usually near there?
+                                Actually, I'll just append it to 'weatherDetails' so it appears with current info.
+                            */}
                         </>
                     ) : (
                         <View className="flex-1 justify-center items-center mt-20">

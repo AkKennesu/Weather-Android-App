@@ -103,94 +103,24 @@ export default function SettingsScreen() {
                     </View>
 
                     {/* Layout Customization */}
+                    {/* Layout Customization */}
                     <View className="mb-8">
                         <Text className="text-blue-400 font-bold mb-4 uppercase tracking-wider text-xs">Home Screen Layout</Text>
-                        <View className={`${cardColor} rounded-3xl overflow-hidden border ${borderColor}`}>
-                            <View className={`flex-row items-center justify-between p-4 border-b ${borderColor}`}>
-                                <View className="flex-row items-center">
-                                    <View className="bg-purple-500/20 p-2 rounded-full mr-3">
-                                        <Wind size={20} color="#c084fc" />
-                                    </View>
-                                    <Text className={`${textColor} font-medium text-base`}>Weather Details</Text>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('Reorder' as any)}
+                            className={`${cardColor} rounded-3xl p-4 border ${borderColor} flex-row items-center justify-between`}
+                        >
+                            <View className="flex-row items-center">
+                                <View className="bg-indigo-500/20 p-2 rounded-full mr-3">
+                                    <Layout size={20} color="#818cf8" />
                                 </View>
-                                <Switch
-                                    value={layoutPreferences.showWeatherDetails}
-                                    onValueChange={() => toggleLayoutSection('showWeatherDetails')}
-                                    trackColor={{ false: '#cbd5e1', true: '#3b82f6' }}
-                                    thumbColor={'#ffffff'}
-                                />
-                            </View>
-                            <View className={`flex-row items-center justify-between p-4 border-b ${borderColor}`}>
-                                <View className="flex-row items-center">
-                                    <View className="bg-orange-500/20 p-2 rounded-full mr-3">
-                                        <Calendar size={20} color="#fb923c" />
-                                    </View>
-                                    <Text className={`${textColor} font-medium text-base`}>Hourly Forecast</Text>
+                                <View>
+                                    <Text className={`${textColor} font-medium text-base`}>Customize & Reorder</Text>
+                                    <Text className={`${subTextColor} text-xs`}>Drag to arrange content</Text>
                                 </View>
-                                <Switch
-                                    value={layoutPreferences.showHourlyForecast}
-                                    onValueChange={() => toggleLayoutSection('showHourlyForecast')}
-                                    trackColor={{ false: '#cbd5e1', true: '#3b82f6' }}
-                                    thumbColor={'#ffffff'}
-                                />
                             </View>
-                            <View className={`flex-row items-center justify-between p-4 border-b ${borderColor}`}>
-                                <View className="flex-row items-center">
-                                    <View className="bg-green-500/20 p-2 rounded-full mr-3">
-                                        <Activity size={20} color="#4ade80" />
-                                    </View>
-                                    <Text className={`${textColor} font-medium text-base`}>Activities</Text>
-                                </View>
-                                <Switch
-                                    value={layoutPreferences.showActivities}
-                                    onValueChange={() => toggleLayoutSection('showActivities')}
-                                    trackColor={{ false: '#cbd5e1', true: '#3b82f6' }}
-                                    thumbColor={'#ffffff'}
-                                />
-                            </View>
-                            <View className={`flex-row items-center justify-between p-4 border-b ${borderColor}`}>
-                                <View className="flex-row items-center">
-                                    <View className="bg-yellow-500/20 p-2 rounded-full mr-3">
-                                        <Moon size={20} color="#facc15" />
-                                    </View>
-                                    <Text className={`${textColor} font-medium text-base`}>Moon Phase</Text>
-                                </View>
-                                <Switch
-                                    value={layoutPreferences.showMoonPhase}
-                                    onValueChange={() => toggleLayoutSection('showMoonPhase')}
-                                    trackColor={{ false: '#cbd5e1', true: '#3b82f6' }}
-                                    thumbColor={'#ffffff'}
-                                />
-                            </View>
-                            <View className={`flex-row items-center justify-between p-4`}>
-                                <View className="flex-row items-center">
-                                    <View className="bg-indigo-500/20 p-2 rounded-full mr-3">
-                                        <Calendar size={20} color="#818cf8" />
-                                    </View>
-                                    <Text className={`${textColor} font-medium text-base`}>Daily Forecast</Text>
-                                </View>
-                                <Switch
-                                    value={layoutPreferences.showDailyForecast}
-                                    onValueChange={() => toggleLayoutSection('showDailyForecast')}
-                                    trackColor={{ false: '#cbd5e1', true: '#3b82f6' }}
-                                    thumbColor={'#ffffff'}
-                                />
-                            </View>
-                            <View className={`flex-row items-center justify-between p-4`}>
-                                <View className="flex-row items-center">
-                                    <View className="bg-blue-500/20 p-2 rounded-full mr-3">
-                                        <MapPin size={20} color="#60a5fa" />
-                                    </View>
-                                    <Text className={`${textColor} font-medium text-base`}>Weather Map</Text>
-                                </View>
-                                <Switch
-                                    value={layoutPreferences.showWeatherMap}
-                                    onValueChange={() => toggleLayoutSection('showWeatherMap')}
-                                    trackColor={{ false: '#cbd5e1', true: '#3b82f6' }}
-                                    thumbColor={'#ffffff'}
-                                />
-                            </View>
-                        </View>
+                            <ArrowLeft size={16} color={isDark ? '#94a3b8' : '#64748b'} style={{ transform: [{ rotate: '180deg' }] }} />
+                        </TouchableOpacity>
                     </View>
 
                     {/* Activities Customization */}

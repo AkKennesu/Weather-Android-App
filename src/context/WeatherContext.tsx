@@ -11,6 +11,10 @@ interface LayoutPreferences {
     showWeatherMap: boolean;
 }
 
+
+
+export type LayoutSectionId = 'weatherDetails' | 'hourlyForecast' | 'activities' | 'moonPhase' | 'dailyForecast' | 'weatherMap';
+
 type Theme = 'light' | 'dark';
 
 interface WeatherContextType {
@@ -27,6 +31,8 @@ interface WeatherContextType {
     removeSavedLocation: (id: number) => void;
     layoutPreferences: LayoutPreferences;
     toggleLayoutSection: (section: keyof LayoutPreferences) => void;
+    layoutOrder: LayoutSectionId[];
+    updateLayoutOrder: (order: LayoutSectionId[]) => void;
     theme: Theme;
     toggleTheme: () => void;
     enabledActivities: string[];
@@ -49,6 +55,14 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
         showWeatherDetails: true,
         showWeatherMap: true,
     });
+    const [layoutOrder, setLayoutOrder] = useState<LayoutSectionId[]>([
+        'weatherDetails',
+        'hourlyForecast',
+        'activities',
+        'moonPhase',
+        'dailyForecast',
+        'weatherMap'
+    ]);
     const [theme, setTheme] = useState<Theme>('dark');
     const [enabledActivities, setEnabledActivities] = useState<string[]>(['Running', 'Cycling', 'Gardening', 'Tennis', 'Badminton', 'Golf', 'Hiking', 'Camping']);
 
@@ -60,6 +74,7 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
                 const savedAirQuality = await AsyncStorage.getItem('air_quality_data');
                 const savedLocationsList = await AsyncStorage.getItem('saved_locations');
                 const savedLayout = await AsyncStorage.getItem('layout_preferences');
+                const savedOrder = await AsyncStorage.getItem('layout_order');
                 const savedUnits = await AsyncStorage.getItem('weather_units');
                 const savedTheme = await AsyncStorage.getItem('weather_theme');
                 const savedActivities = await AsyncStorage.getItem('enabled_activities');
@@ -69,6 +84,7 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
                 if (savedAirQuality) setAirQuality(JSON.parse(savedAirQuality));
                 if (savedLocationsList) setSavedLocations(JSON.parse(savedLocationsList));
                 if (savedLayout) setLayoutPreferences(JSON.parse(savedLayout));
+                if (savedOrder) setLayoutOrder(JSON.parse(savedOrder));
                 if (savedUnits) setUnits(savedUnits as 'celsius' | 'fahrenheit');
                 if (savedTheme) setTheme(savedTheme as Theme);
                 if (savedActivities) setEnabledActivities(JSON.parse(savedActivities));
@@ -140,6 +156,15 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const updateLayoutOrder = async (order: LayoutSectionId[]) => {
+        setLayoutOrder(order);
+        try {
+            await AsyncStorage.setItem('layout_order', JSON.stringify(order));
+        } catch (error) {
+            console.error('Failed to save layout order', error);
+        }
+    };
+
     const updateUnits = async (newUnits: 'celsius' | 'fahrenheit') => {
         setUnits(newUnits);
         try {
@@ -187,6 +212,8 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
             removeSavedLocation,
             layoutPreferences,
             toggleLayoutSection,
+            layoutOrder,
+            updateLayoutOrder,
             theme,
             toggleTheme,
             enabledActivities,
