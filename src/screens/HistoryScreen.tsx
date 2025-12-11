@@ -13,7 +13,7 @@ import { WeatherIcon } from '../components/WeatherIcon';
 
 export default function HistoryScreen() {
     const navigation = useNavigation();
-    const { location, theme, units } = useWeather();
+    const { location, theme, units, iconSet } = useWeather();
     const [history, setHistory] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [selectedHistoryItem, setSelectedHistoryItem] = useState<any>(null);
@@ -161,7 +161,7 @@ export default function HistoryScreen() {
                                             </View>
 
                                             <View className={`flex-row justify-center items-center mb-8 ${isDark ? 'bg-[#0f172a]' : 'bg-slate-100'} rounded-2xl p-4`}>
-                                                <WeatherIcon code={selectedHistoryItem.code} isDay={true} width={80} height={80} />
+                                                <WeatherIcon code={selectedHistoryItem.code} isDay={true} width={80} height={80} iconSet={iconSet} />
                                                 <View className="ml-6">
                                                     <View className="flex-row items-end">
                                                         <Text className={`${textColor} text-5xl font-bold`}>{formatTemp(selectedHistoryItem.max)}°</Text>

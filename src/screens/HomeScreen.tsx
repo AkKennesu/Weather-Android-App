@@ -24,7 +24,17 @@ import { WeatherIcon } from '../components/WeatherIcon';
 
 export default function HomeScreen() {
     const navigation = useNavigation<any>();
-    const { location, setLocation, weather, setWeather, airQuality, setAirQuality, layoutPreferences, units, theme, enabledActivities, addSavedLocation, removeSavedLocation, savedLocations, layoutOrder } = useWeather();
+    const {
+        location, setLocation,
+        weather, setWeather,
+        airQuality, setAirQuality,
+        layoutPreferences, units, theme,
+        enabledActivities,
+        addSavedLocation, removeSavedLocation, savedLocations,
+        layoutOrder,
+        iconSet, layoutDensity,
+        sectionSizes
+    } = useWeather();
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -239,8 +249,10 @@ export default function HomeScreen() {
         <View className={`flex-1 ${bgColor}`}>
             {/* Background Gradient - Always visible */}
             <LinearGradient
-                colors={gradientColors as any}
+                colors={isDark ? ['#0f172a', '#1e1b4b'] : ['#60a5fa', '#e0f2fe']}
                 className="absolute left-0 right-0 top-0 h-full"
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
             />
 
             <SafeAreaView className="flex-1">
@@ -249,29 +261,31 @@ export default function HomeScreen() {
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={isDark ? "#fff" : "#3b82f6"} />}
                     showsVerticalScrollIndicator={false}
                 >
-                    {/* Header & Search - Compact Design */}
-                    <View className="px-4 pt-2 pb-4 z-50 flex-row items-center space-x-2">
-                        <View className={`flex-1 flex-row items-center ${searchBg} rounded-full px-3 py-2 border ${borderColor} shadow-sm mr-4`}>
-                            <Search color={searchPlaceholder} size={16} />
+                    {/* Header & Search - Floating Glass Effect */}
+                    <View className="px-4 pt-2 pb-4 z-50 flex-row items-center space-x-3">
+                        <View className={`flex-1 flex-row items-center ${isDark ? 'bg-white/10' : 'bg-white/20'} rounded-full px-4 py-3 border ${borderColor} shadow-sm mr-2`}>
+                            <Search color={isDark ? '#cbd5e1' : '#1e293b'} size={20} />
                             <TextInput
                                 placeholder="Search city..."
-                                placeholderTextColor={searchPlaceholder}
-                                className={`flex-1 ml-2 ${textColor} text-base py-2`}
+                                placeholderTextColor={isDark ? '#94a3b8' : '#475569'}
+                                className={`flex-1 ml-3 ${textColor} text-base font-medium`}
                                 value={searchQuery}
                                 onChangeText={handleSearch}
                             />
                             {searchQuery.length > 0 && (
                                 <TouchableOpacity onPress={() => { setSearchQuery(''); setSearchResults([]); setIsSearching(false); }}>
-                                    <Text className="text-gray-400 text-xs">X</Text>
+                                    <View className="bg-black/20 rounded-full p-1">
+                                        <Text className="text-white text-[10px] font-bold px-1">✕</Text>
+                                    </View>
                                 </TouchableOpacity>
                             )}
                         </View>
                         {/* Settings Button */}
                         <TouchableOpacity
                             onPress={() => navigation.navigate('Settings')}
-                            className={`${searchBg} p-2 rounded-full border ${borderColor} shadow-sm`}
+                            className={`${isDark ? 'bg-white/10' : 'bg-white/20'} p-3 rounded-full border ${borderColor} shadow-sm`}
                         >
-                            <Settings color={searchPlaceholder} size={20} />
+                            <Settings color={isDark ? '#cbd5e1' : '#1e293b'} size={24} />
                         </TouchableOpacity>
                     </View>
 
@@ -304,9 +318,12 @@ export default function HomeScreen() {
                                 removeSavedLocation={removeSavedLocation}
                                 formatTemp={formatTemp}
                                 borderColor={borderColor}
+                                iconSet={iconSet}
                             />
 
                             {layoutOrder.map((sectionId) => {
+                                const sectionSpacing = layoutDensity === 'compact' ? 'mb-2' : 'mb-6';
+
                                 switch (sectionId) {
                                     case 'weatherDetails':
                                         return layoutPreferences.showWeatherDetails && (
@@ -315,9 +332,14 @@ export default function HomeScreen() {
                                                     windSpeed={displayWeather.windspeed}
                                                     humidity={selectedHour ? displayWeather.humidity : weather.hourly.relative_humidity_2m[0]}
                                                     precipitation={selectedHour ? displayWeather.precipitation : weather.hourly.precipitation_probability[0]}
+                                                    cardBg={cardBg}
+                                                    borderColor={borderColor}
+                                                    textColor={textColor}
+                                                    subTextColor={subTextColor}
+                                                    iconColor={isDark ? "white" : "#3b82f6"}
                                                 />
                                                 {/* Extended Details */}
-                                                <View className="flex-row flex-wrap justify-between px-4 mt-4">
+                                                <View className={`flex-row flex-wrap justify-between px-4 mt-4`}>
                                                     {/* Feels Like */}
                                                     <View className={`w-[31%] ${cardBg} rounded-2xl p-3 items-center mb-3 border ${borderColor}`}>
                                                         <Thermometer size={20} color="#f87171" />
@@ -352,7 +374,7 @@ export default function HomeScreen() {
 
                                                 {/* Air Quality Section */}
                                                 {airQuality && (
-                                                    <View className="px-4 mb-6 mt-2">
+                                                    <View className={`px-4 mt-2 ${sectionSpacing}`}>
                                                         <View className={`${cardBg} rounded-3xl p-4 border ${borderColor}`}>
                                                             <View className="flex-row items-center mb-3">
                                                                 <Wind size={18} color="#34d399" />
@@ -379,13 +401,13 @@ export default function HomeScreen() {
                                                         </View>
                                                     </View>
                                                 )}
-                                                <View className="mb-6" />
+                                                <View className={sectionSpacing} />
                                             </View>
                                         );
 
                                     case 'hourlyForecast':
                                         return layoutPreferences.showHourlyForecast && (
-                                            <View key="hourlyForecast">
+                                            <View key="hourlyForecast" className={sectionSpacing}>
                                                 <HourlyForecast
                                                     weather={weather}
                                                     selectedDate={selectedDate}
@@ -400,13 +422,14 @@ export default function HomeScreen() {
                                                     cardBg={cardBg}
                                                     borderColor={borderColor}
                                                     searchPlaceholder={searchPlaceholder}
+                                                    iconSet={iconSet}
                                                 />
                                             </View>
                                         );
 
                                     case 'activities':
                                         return layoutPreferences.showActivities && (
-                                            <View key="activities" className="mb-6">
+                                            <View key="activities" className={sectionSpacing}>
                                                 <View className="flex-row items-center px-6 mb-3">
                                                     <Text className={`${textColor} font-bold text-lg`}>Activities</Text>
                                                 </View>
@@ -429,7 +452,7 @@ export default function HomeScreen() {
 
                                     case 'moonPhase':
                                         return layoutPreferences.showMoonPhase && (
-                                            <View key="moonPhase" className="px-4 mb-6">
+                                            <View key="moonPhase" className={`px-4 ${sectionSpacing}`}>
                                                 <View className={`${cardBg} rounded-3xl p-5 border ${borderColor}`}>
                                                     <View className="flex-row items-center justify-between mb-4">
                                                         <View>
@@ -482,7 +505,7 @@ export default function HomeScreen() {
 
                                     case 'dailyForecast':
                                         return layoutPreferences.showDailyForecast && (
-                                            <View key="dailyForecast">
+                                            <View key="dailyForecast" className={sectionSpacing}>
                                                 <DailyForecast
                                                     weather={weather}
                                                     selectedDate={selectedDate}
@@ -494,6 +517,8 @@ export default function HomeScreen() {
                                                     borderColor={borderColor}
                                                     searchPlaceholder={searchPlaceholder}
                                                     isDark={isDark}
+                                                    iconSet={iconSet}
+                                                    layoutDensity={layoutDensity}
                                                 />
                                             </View>
                                         );
@@ -543,7 +568,7 @@ export default function HomeScreen() {
                 {/* Floating History Button */}
                 <View className="absolute bottom-6 right-6">
                     <TouchableOpacity
-                        className="bg-[#3b82f6] p-4 rounded-full shadow-lg shadow-blue-500/50"
+                        className="bg-blue-500 p-4 rounded-full shadow-lg shadow-blue-500/50 border border-white/20"
                         onPress={() => navigation.navigate('History')}
                     >
                         <MapIcon color="white" size={24} />
@@ -573,7 +598,7 @@ export default function HomeScreen() {
                                             </View>
 
                                             <View className={`flex-row justify-center items-center mb-8 ${isDark ? 'bg-[#0f172a]' : 'bg-slate-100'} rounded-2xl p-4`}>
-                                                <WeatherIcon code={selectedDailyDetails.weathercode} isDay={true} width={80} height={80} />
+                                                <WeatherIcon code={selectedDailyDetails.weathercode} isDay={true} width={80} height={80} iconSet={iconSet} />
                                                 <View className="ml-6">
                                                     <View className="flex-row items-end">
                                                         <Text className={`${textColor} text-5xl font-bold`}>{formatTemp(selectedDailyDetails.maxTemp)}°</Text>

@@ -12,9 +12,10 @@ import HeavyRain from '../../assets/weather-icons/heavy_rain.svg';
 interface WeatherIconProps extends SvgProps {
     code: number;
     isDay?: boolean;
+    iconSet?: 'default' | 'monochrome';
 }
 
-export const WeatherIcon: React.FC<WeatherIconProps> = ({ code, isDay = true, ...props }) => {
+export const WeatherIcon: React.FC<WeatherIconProps> = ({ code, isDay = true, iconSet = 'default', ...props }) => {
     let Icon = ClearDay;
 
     // Mapping based on Open-Meteo WMO codes
@@ -72,5 +73,14 @@ export const WeatherIcon: React.FC<WeatherIconProps> = ({ code, isDay = true, ..
             break;
     }
 
-    return <Icon {...props} />;
+    // Apply specific props for monochrome mode if needed
+    // Note: react-native-svg icons often use internal paths. 
+    // If we want monochrome, we might need to rely on the `fill` or `color` prop being passed down and respected by the SVG.
+    // Assuming the imported SVGs accept reasonable props.
+    const monochromeProps = iconSet === 'monochrome' ? {
+        fill: props.color || (isDay ? 'white' : 'white'), // Default to white for monochrome if no color passed
+        style: { opacity: 0.9 }
+    } : {};
+
+    return <Icon {...props} {...monochromeProps} />;
 };

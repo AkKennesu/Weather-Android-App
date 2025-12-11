@@ -12,12 +12,14 @@ export default function SettingsScreen() {
         setUnits,
         savedLocations,
         removeSavedLocation,
-        layoutPreferences,
-        toggleLayoutSection,
         theme,
         toggleTheme,
         enabledActivities,
-        toggleActivity
+        toggleActivity,
+        iconSet,
+        setIconSet,
+        layoutDensity,
+        setLayoutDensity
     } = useWeather();
 
     const allActivities = ['Running', 'Cycling', 'Gardening', 'Tennis', 'Badminton', 'Golf', 'Hiking', 'Camping'];
@@ -77,12 +79,14 @@ export default function SettingsScreen() {
                             </View>
 
                             {/* Units Toggle */}
-                            <View className={`flex-row items-center justify-between p-4`}>
+                            <View className={`flex-row items-center justify-between p-4 border-b ${borderColor}`}>
                                 <View className="flex-row items-center">
                                     <View className="bg-blue-500/20 p-2 rounded-full mr-3">
                                         <Thermometer size={20} color="#60a5fa" />
                                     </View>
-                                    <Text className={`${textColor} font-medium text-base`}>Temperature Unit</Text>
+                                    <View>
+                                        <Text className={`${textColor} font-medium text-base`}>Temperature Unit</Text>
+                                    </View>
                                 </View>
                                 <View className={`flex-row ${isDark ? 'bg-black/20' : 'bg-slate-100'} rounded-lg p-1`}>
                                     <TouchableOpacity
@@ -99,10 +103,61 @@ export default function SettingsScreen() {
                                     </TouchableOpacity>
                                 </View>
                             </View>
+
+                            {/* Icon Style Toggle */}
+                            <View className={`flex-row items-center justify-between p-4 border-b ${borderColor}`}>
+                                <View className="flex-row items-center">
+                                    <View className="bg-purple-500/20 p-2 rounded-full mr-3">
+                                        <Sun size={20} color="#a855f7" />
+                                    </View>
+                                    <View>
+                                        <Text className={`${textColor} font-medium text-base`}>Icon Style</Text>
+                                    </View>
+                                </View>
+                                <View className={`flex-row ${isDark ? 'bg-black/20' : 'bg-slate-100'} rounded-lg p-1`}>
+                                    <TouchableOpacity
+                                        onPress={() => setIconSet('default')}
+                                        className={`px-3 py-1 rounded-md ${iconSet === 'default' ? 'bg-blue-500' : 'bg-transparent'}`}
+                                    >
+                                        <Text className={`font-bold ${iconSet === 'default' ? 'text-white' : subTextColor}`}>Color</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => setIconSet('monochrome')}
+                                        className={`px-3 py-1 rounded-md ${iconSet === 'monochrome' ? 'bg-blue-500' : 'bg-transparent'}`}
+                                    >
+                                        <Text className={`font-bold ${iconSet === 'monochrome' ? 'text-white' : subTextColor}`}>Mono</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+
+                            {/* Layout Density Toggle */}
+                            <View className={`flex-row items-center justify-between p-4`}>
+                                <View className="flex-row items-center">
+                                    <View className="bg-green-500/20 p-2 rounded-full mr-3">
+                                        <Layout size={20} color="#4ade80" />
+                                    </View>
+                                    <View>
+                                        <Text className={`${textColor} font-medium text-base`}>Layout Density</Text>
+                                    </View>
+                                </View>
+                                <View className={`flex-row ${isDark ? 'bg-black/20' : 'bg-slate-100'} rounded-lg p-1`}>
+                                    <TouchableOpacity
+                                        onPress={() => setLayoutDensity('comfortable')}
+                                        className={`px-3 py-1 rounded-md ${layoutDensity === 'comfortable' ? 'bg-blue-500' : 'bg-transparent'}`}
+                                    >
+                                        <Text className={`font-bold ${layoutDensity === 'comfortable' ? 'text-white' : subTextColor}`}>Comfy</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => setLayoutDensity('compact')}
+                                        className={`px-3 py-1 rounded-md ${layoutDensity === 'compact' ? 'bg-blue-500' : 'bg-transparent'}`}
+                                    >
+                                        <Text className={`font-bold ${layoutDensity === 'compact' ? 'text-white' : subTextColor}`}>Tight</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         </View>
                     </View>
 
-                    {/* Layout Customization */}
                     {/* Layout Customization */}
                     <View className="mb-8">
                         <Text className="text-blue-400 font-bold mb-4 uppercase tracking-wider text-xs">Home Screen Layout</Text>

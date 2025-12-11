@@ -68,7 +68,10 @@ const isGoodForActivity = (activity: string, temp: number, rainProb: number, win
 
 export const getActivityAnalysis = (weather: WeatherData): ActivityStatus[] => {
     const activities = ['Running', 'Cycling', 'Gardening', 'Tennis', 'Badminton', 'Golf', 'Hiking', 'Camping'];
-    const currentHourIndex = new Date().getHours(); // Approximate index for current hour
+    // Find index matching current weather time to support different timezones
+    const currentHourIndex = weather.hourly.time.findIndex(t => t === weather.current_weather.time);
+
+    if (currentHourIndex === -1) return []; // Safety check
 
     // Get next 3 hours (including current)
     const nextHours = weather.hourly.time.slice(currentHourIndex, currentHourIndex + 3).map((t, i) => {

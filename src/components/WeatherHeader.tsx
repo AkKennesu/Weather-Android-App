@@ -17,6 +17,7 @@ interface WeatherHeaderProps {
     removeSavedLocation: (id: number) => void;
     formatTemp: (temp: number) => number;
     borderColor: string;
+    iconSet?: 'default' | 'monochrome';
 }
 
 export const WeatherHeader: React.FC<WeatherHeaderProps> = ({
@@ -29,7 +30,8 @@ export const WeatherHeader: React.FC<WeatherHeaderProps> = ({
     addSavedLocation,
     removeSavedLocation,
     formatTemp,
-    borderColor
+    borderColor,
+    iconSet = 'default'
 }) => {
     if (!displayWeather || !weatherInfo) return null;
 
@@ -43,31 +45,38 @@ export const WeatherHeader: React.FC<WeatherHeaderProps> = ({
             />
 
             <View className="items-center py-10 z-10">
-                <Text className="text-white text-3xl font-bold tracking-wider text-center shadow-lg">
+                <Text className="text-white text-3xl font-bold tracking-wider text-center shadow-lg drop-shadow-md">
                     {location?.name || 'Current Location'}
                 </Text>
-                <Text className="text-gray-200 text-sm font-medium mt-1 shadow-md">
+                <Text className="text-blue-100 text-sm font-semibold tracking-widest uppercase mt-2 shadow-sm opacity-90">
                     {selectedHour
                         ? format(new Date(selectedHour.time), 'EEEE, h:mm a')
                         : format(new Date(), 'EEEE, d MMMM')
                     }
                 </Text>
 
-                <View className="my-8 shadow-2xl">
-                    <WeatherIcon code={displayWeather.weathercode} isDay={displayWeather.is_day === 1} width={200} height={200} />
+                <View className="my-10 relative justify-center items-center">
+                    {/* Glow Effect */}
+                    <View className="absolute w-48 h-48 bg-white/20 rounded-full blur-3xl opacity-30" />
+
+                    <View className="shadow-2xl">
+                        <WeatherIcon code={displayWeather.weathercode} isDay={displayWeather.is_day === 1} width={220} height={220} iconSet={iconSet} />
+                    </View>
                 </View>
 
-                <Text className="text-white text-8xl font-bold tracking-tighter ml-4 shadow-lg">
-                    {formatTemp(displayWeather.temperature)}°
-                </Text>
+                <View className="flex-col items-center">
+                    <Text className="text-white text-9xl font-black tracking-tighter shadow-xl ml-4" style={{ includeFontPadding: false }}>
+                        {formatTemp(displayWeather.temperature)}°
+                    </Text>
 
-                <Text className="text-white text-xl font-medium mt-2 tracking-widest uppercase shadow-md">
-                    {weatherInfo.label}
-                </Text>
+                    <Text className="text-white text-2xl font-bold mt-[-10px] tracking-widest uppercase shadow-md opacity-90">
+                        {weatherInfo.label}
+                    </Text>
+                </View>
 
-                <View className="flex-row space-x-4 mt-3">
-                    <Text className="text-gray-200 font-medium shadow-sm">H: {formatTemp(weather.daily.temperature_2m_max[0])}°</Text>
-                    <Text className="text-gray-200 font-medium shadow-sm">L: {formatTemp(weather.daily.temperature_2m_min[0])}°</Text>
+                <View className="flex-row space-x-6 mt-6 bg-white/10 px-6 py-2 rounded-full border border-white/20">
+                    <Text className="text-white font-bold text-lg shadow-sm">H: {formatTemp(weather.daily.temperature_2m_max[0])}°</Text>
+                    <Text className="text-white font-bold text-lg shadow-sm">L: {formatTemp(weather.daily.temperature_2m_min[0])}°</Text>
                 </View>
             </View>
 

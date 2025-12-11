@@ -8,7 +8,7 @@ import { useWeather, LayoutSectionId } from '../context/WeatherContext';
 
 export default function ReorderScreen() {
     const navigation = useNavigation();
-    const { layoutOrder, updateLayoutOrder, theme, layoutPreferences, toggleLayoutSection } = useWeather();
+    const { layoutOrder, updateLayoutOrder, theme, layoutPreferences, toggleLayoutSection, sectionSizes, setSectionSize } = useWeather();
     const isDark = theme === 'dark';
 
     // UI Theme Constants
@@ -66,35 +66,54 @@ export default function ReorderScreen() {
 
         return (
             <ScaleDecorator>
-                <TouchableOpacity
-                    onLongPress={drag}
-                    disabled={isActive}
-                    className={`flex-row items-center justify-between p-4 mb-3 rounded-2xl border ${borderColor} ${isActive ? 'bg-blue-500/20 border-blue-500' : cardColor}`}
+                <View
+                    className={`p-4 mb-3 rounded-2xl border ${borderColor} ${isActive ? 'bg-blue-500/20 border-blue-500' : cardColor}`}
                 >
-                    <View className="flex-row items-center flex-1">
-                        <TouchableOpacity onPressIn={drag} className="mr-4 p-2">
-                            <GripVertical size={24} color={isDark ? '#94a3b8' : '#cbd5e1'} />
-                        </TouchableOpacity>
+                    <View className="flex-row items-center justify-between mb-2">
+                        <View className="flex-row items-center flex-1">
+                            <TouchableOpacity onPressIn={drag} className="mr-4 p-2">
+                                <GripVertical size={24} color={isDark ? '#94a3b8' : '#cbd5e1'} />
+                            </TouchableOpacity>
 
-                        <View className={`p-2 rounded-full mr-3 ${iconBgColor}`}>
-                            {icon}
+                            <View className={`p-2 rounded-full mr-3 ${iconBgColor}`}>
+                                {icon}
+                            </View>
+
+                            <View>
+                                <Text className={`${textColor} font-bold text-base`}>{label}</Text>
+                            </View>
                         </View>
 
-                        <View>
-                            <Text className={`${textColor} font-bold text-base`}>{label}</Text>
-                            <Text className={`${subTextColor} text-xs`}>Long press to reorder</Text>
-                        </View>
+                        {toggleKey && (
+                            <Switch
+                                value={isEnabled}
+                                onValueChange={() => toggleLayoutSection(toggleKey!)}
+                                trackColor={{ false: '#cbd5e1', true: '#3b82f6' }}
+                                thumbColor={'#ffffff'}
+                            />
+                        )}
                     </View>
 
-                    {toggleKey && (
-                        <Switch
-                            value={isEnabled}
-                            onValueChange={() => toggleLayoutSection(toggleKey!)}
-                            trackColor={{ false: '#cbd5e1', true: '#3b82f6' }}
-                            thumbColor={'#ffffff'}
-                        />
-                    )}
-                </TouchableOpacity>
+                    {/* Size Controls */}
+                    <View className="flex-row items-center justify-end pl-12 space-x-2">
+                        <Text className={`${subTextColor} text-xs mr-2`}>Size:</Text>
+                        {(['small', 'medium', 'large'] as const).map((size) => (
+                            <TouchableOpacity
+                                key={size}
+                                onPress={() => setSectionSize(item, size)}
+                                className={`px-3 py-1 rounded-lg border ${sectionSizes[item] === size
+                                    ? 'bg-blue-500 border-blue-500'
+                                    : `bg-transparent ${borderColor}`
+                                    }`}
+                            >
+                                <Text className={`text-xs font-bold ${sectionSizes[item] === size ? 'text-white' : subTextColor
+                                    }`}>
+                                    {size.charAt(0).toUpperCase()}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
             </ScaleDecorator>
         );
     };
@@ -120,6 +139,7 @@ export default function ReorderScreen() {
                         renderItem={renderItem}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingBottom: 40, paddingTop: 10 }}
+                        extraData={{ layoutPreferences, sectionSizes }}
                     />
                 </View>
             </SafeAreaView>

@@ -19,6 +19,8 @@ interface HourlyForecastProps {
     cardBg: string;
     borderColor: string;
     searchPlaceholder: string;
+    iconSet?: 'default' | 'monochrome';
+    size?: 'small' | 'medium' | 'large';
 }
 
 export const HourlyForecast: React.FC<HourlyForecastProps> = ({
@@ -34,8 +36,17 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({
     subTextColor,
     cardBg,
     borderColor,
-    searchPlaceholder
+    searchPlaceholder,
+    iconSet = 'default',
+    size = 'medium'
 }) => {
+    // Size variants
+    const cardWidth = size === 'small' ? 'w-[56px]' : size === 'large' ? 'w-[88px]' : 'w-[72px]';
+    const iconSize = size === 'small' ? 24 : size === 'large' ? 48 : 36;
+    const timeTextSize = size === 'small' ? 'text-[10px]' : size === 'large' ? 'text-sm' : 'text-xs';
+    const tempTextSize = size === 'small' ? 'text-sm' : size === 'large' ? 'text-lg' : 'text-base';
+    const cardPadding = size === 'small' ? 'py-2' : size === 'large' ? 'py-5' : 'py-4';
+
     return (
         <View className="mb-6">
             <View className="flex-row items-center px-6 mb-3 justify-between">
@@ -45,8 +56,7 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({
                         {selectedDate && format(new Date(selectedDate), 'EEEE')} Forecast
                     </Text>
                 </View>
-
-                {/* Return to Present Button */}
+                {/* ... Return to Present ... */}
                 {(selectedHour || (selectedDate && !new Date(selectedDate).toDateString().includes(new Date().toDateString()))) && (
                     <TouchableOpacity
                         onPress={() => {
@@ -57,7 +67,7 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({
                         }}
                         className="bg-blue-500/20 px-3 py-1 rounded-full border border-blue-500/50"
                     >
-                        <Text className="text-blue-400 text-xs font-bold">Return to Now</Text>
+                        <Text className="text-blue-400 text-xs font-bold">Return</Text>
                     </TouchableOpacity>
                 )}
             </View>
@@ -79,11 +89,17 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({
                         <TouchableOpacity
                             key={time}
                             onPress={() => handleHourClick(0, actualIndex)} // Pass actual index
-                            className={`items-center justify-center w-16 py-4 mr-3 rounded-3xl ${isSelected ? 'bg-[#3b82f6] border-2 border-white' : `${cardBg} border ${borderColor}`}`}
+                            className={`items-center justify-center ${cardWidth} ${cardPadding} mr-3 rounded-[24px] border ${isSelected
+                                ? 'bg-blue-500 border-blue-400 shadow-lg shadow-blue-500/50'
+                                : `${cardBg} ${borderColor} shadow-sm`}`}
                         >
-                            <Text className={`text-xs mb-2 ${isSelected ? 'text-white font-bold' : subTextColor}`}>{hour}</Text>
-                            <WeatherIcon code={code} isDay={isDay} width={32} height={32} />
-                            <Text className={`text-sm font-bold mt-2 ${isSelected ? 'text-white' : textColor}`}>
+                            <Text className={`${timeTextSize} mb-3 font-medium ${isSelected ? 'text-white' : subTextColor}`}>{hour}</Text>
+
+                            <View className="mb-3">
+                                <WeatherIcon code={code} isDay={isDay} width={iconSize} height={iconSize} iconSet={iconSet} />
+                            </View>
+
+                            <Text className={`${tempTextSize} font-bold ${isSelected ? 'text-white' : textColor}`}>
                                 {formatTemp(weather.hourly.temperature_2m[actualIndex])}°
                             </Text>
                         </TouchableOpacity>
